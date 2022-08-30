@@ -1,0 +1,33 @@
+import { NextApiRequest } from "next";
+import { getSession } from "next-auth/react";
+
+const AUTH_GUARD_NO_SESSION = "Authorization failed. No session.";
+const AUTH_GUARD_NO_USER = "Authorization failed. No user.";
+const AUTH_GUARD_MISSING_INFO = "Authorization failed. Missing info.";
+
+export type AuthGuardResponse = {
+  email: string;
+};
+
+export const authGuard: any = async (req: NextApiRequest) => {
+  const session = await getSession({ req });
+  if (!session) {
+    throw new Error(AUTH_GUARD_NO_SESSION);
+  }
+
+  const user = session.user;
+  if (!user) {
+    throw new Error(AUTH_GUARD_NO_USER);
+  }
+
+  const email = user.email || "";
+
+  if (!email) {
+    throw new Error(AUTH_GUARD_MISSING_INFO);
+  }
+
+  const res: AuthGuardResponse = {
+    email,
+  };
+  return res;
+};

@@ -1,0 +1,72 @@
+import { NextApiRequest, NextApiResponse } from "next";
+
+export default async function handle(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method === "POST") {
+    const {{camelCase name}}: {{titleCase name}} = req.body;
+    if (!{{camelCase name}}) {
+      return res.status(400).json({ data: "No {{camelCase name}} found." });
+    }
+
+    try {
+      const { email }: AuthGuardResponse = await authGuard(req);
+      const create{{titleCase name}} = await PrismaClient.{{camelCase name}}.create({
+        data: {
+          ...{{camelCase name}},
+          user: {
+            connect: { email },
+          },
+        },
+      });
+      res.json(create{{titleCase name}});
+    } catch (e) {
+      console.log(e);
+      res.status(400).send(e);
+    }
+  } else if (req.method === "PATCH") {
+    const {{camelCase name}}OnReq: {{titleCase name}} = req.body;
+    if (!{{camelCase name}}OnReq) {
+      return res.status(400).json({ data: "No {{camelCase name}} found." });
+    }
+
+    try {
+      await authGuard(req);
+      let {{camelCase name}}: {{titleCase name}} | null = await PrismaClient.{{camelCase name}}.findUnique({
+        where: {
+          id: req.body.id,
+        },
+      });
+
+      if (!{{camelCase name}}) {
+        return res.status(400).json({ data: "No {{camelCase name}} found." });
+      }
+
+      {{camelCase name}} = await PrismaClient.{{camelCase name}}.update({
+        where: {
+          id: req.body.id,
+        },
+        data: {{camelCase name}}OnReq,
+      });
+      res.json({{camelCase name}});
+    } catch (e) {
+      res.status(400).send(e);
+    }
+  } else if (req.method === "DELETE") {
+    try {
+      const deleted{{titleCase name}} = await PrismaClient.{{camelCase name}}.delete({
+        where: {
+          id: req.body.id,
+        },
+      });
+      if (deleted{{titleCase name}}) {
+        res.status(200).send(deleted{{titleCase name}});
+      } else {
+        throw Error("Failed to delete {{camelCase name}}.");
+      }
+    } catch (e) {
+      res.status(400).send(e);
+    }
+  }
+}
